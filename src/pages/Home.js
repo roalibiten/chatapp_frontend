@@ -1,6 +1,8 @@
 import React, { Component } from 'react'
 import { Text, StyleSheet, View, Image,Dimensions } from 'react-native'
 
+import MessageCard from "../components/MessageCard"
+
 export default class Home extends Component {
     render() {
         return (
@@ -13,6 +15,8 @@ export default class Home extends Component {
                     style={styles.image}
                     resizeMode="center"
                 />
+                                <MessageCard/>
+
             </View>
         )
     }
