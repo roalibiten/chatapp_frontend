@@ -8,7 +8,6 @@ export default class Home extends Component {
         return (
             <View style={styles.mainContainer} >
                  <Image
-                    style={styles.tinyLogo}
                     source={{
                         uri: 'https://www.cyberpark.com.tr/content/upload/companies/etiya_yeni.png',
                       }}
