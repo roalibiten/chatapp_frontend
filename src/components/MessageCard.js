@@ -10,7 +10,8 @@ export default class MessageCard extends Component {
         this.state = {
             opened:false,
             dialogs:[{from:"employee",message:"Merhaba! Hosgeldiniz."},{from:"user",message:"Merhaba!."},{from:"user",message:"Merhaba!."},{from:"employee",message:"Merhaba! Hosgeldiniz."},{from:"user",message:"Merhaba!."},{from:"employee",message:"Merhaba! Hosgeldiniz."},{from:"user",message:"Merhaba!."},{from:"employee",message:"Merhaba! Hosgeldiniz."},{from:"user",message:"Merhaba!."}],
-            components:[]
+            components:[],
+            knownUser:false
         };
 
         this.yPosition=new Animated.Value(0);
@@ -89,28 +90,54 @@ export default class MessageCard extends Component {
                     <Text> Canlı Destek </Text>
                 </TouchableOpacity>
                 {this.state.opened? 
+                
                  <View style={styles.chatView}>
-                 <ScrollView style={styles.dialogView}>
+
+                    {this.state.knownUser? 
+
+                    
+<View>
+<ScrollView style={styles.dialogView}>
 
 
-                    {this.state.components}
+{this.state.components}
 
-                 </ScrollView>
-                 <View style={styles.bottomBarView}>
-                     <TextInput
-                         style={styles.inputView}
-                         placeholder="Your Message"
-                     />
-                    <TouchableOpacity style={{alignItems:"center",justifyContent:"center"}}>
-                        <Image
-                            source={{
-                                uri: 'https://image.flaticon.com/icons/png/512/1933/1933005.png',
-                            }}
-                            style={styles.image}
-                            resizeMode="center"
+</ScrollView>
+<View style={styles.bottomBarView}>
+ <TextInput
+     style={styles.inputView}
+     placeholder="Your Message"
+ />
+<TouchableOpacity style={{alignItems:"center",justifyContent:"center"}}>
+    <Image
+        source={{
+            uri: 'https://image.flaticon.com/icons/png/512/1933/1933005.png',
+        }}
+        style={styles.image}
+        resizeMode="center"
+    />
+</TouchableOpacity>
+</View>
+</View>
+                    
+                    :
+                    
+                    <View>
+                        <TextInput
+                            placeholder="Ad Soyad"
+
                         />
-                    </TouchableOpacity>
-                 </View>
+                        <TextInput
+                            placeholder="Mail Adresi"
+                            
+                        />
+                    </View>    
+                    
+                    
+                    
+                    }
+
+                
                  
                  
              </View>
