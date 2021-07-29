@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Text, StyleSheet, View } from 'react-native'
+import { Text, StyleSheet, View,Dimensions } from 'react-native'
 import {
   BrowserRouter as Router,
   Switch,
@@ -15,6 +15,7 @@ import Admin from "../src/pages/Admin"
 export default class App extends Component {
   render() {
     return (
+      <View style={styles.container}>
       <Router>
         <Switch>
           <Route path="/home" children={<Home />} />
@@ -25,9 +26,20 @@ export default class App extends Component {
 
         </Switch>
       </Router>
+      </View>
       
     )
   }
 }
 
-const styles = StyleSheet.create({})
+const screenWidth = Dimensions.get('window').width;
+const screenHeight = Dimensions.get('window').height;
+const styles = StyleSheet.create({
+  container:{
+    width:screenHeight*0.5,
+    height:screenHeight*0.6,
+
+    
+    
+},
+})

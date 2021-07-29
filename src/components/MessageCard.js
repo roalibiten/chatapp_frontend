@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
-import { Text, StyleSheet, View,TextInput,Dimensions,TouchableOpacity,Animated ,Image} from 'react-native'
+import { Text, StyleSheet, View,TextInput,Dimensions,TouchableOpacity,Animated ,Image,ScrollView} from 'react-native'
 
+import MessageBubble from './MessageBubble';
 export default class MessageCard extends Component {
 
     constructor(props) {
@@ -8,11 +9,16 @@ export default class MessageCard extends Component {
         
         this.state = {
             opened:false,
-
+            dialogs:[{from:"employee",message:"Merhaba! Hosgeldiniz."},{from:"user",message:"Merhaba!."},{from:"user",message:"Merhaba!."},{from:"employee",message:"Merhaba! Hosgeldiniz."},{from:"user",message:"Merhaba!."},{from:"employee",message:"Merhaba! Hosgeldiniz."},{from:"user",message:"Merhaba!."},{from:"employee",message:"Merhaba! Hosgeldiniz."},{from:"user",message:"Merhaba!."}],
+            components:[]
         };
 
-        this.yPosition=new Animated.Value(-screenHeight*0.55);
+        this.yPosition=new Animated.Value(0);
 
+    }
+
+    componentDidMount(){
+        this.createComponents()
     }
 
     animation(){
@@ -34,17 +40,42 @@ export default class MessageCard extends Component {
             Animated.timing(
                 this.yPosition,
                 {
-                  toValue: -screenHeight*0.55,
+                  toValue: 0,
                   duration: 750,
                 }
-              ).start(()=>{
+              ).start(
                 this.setState({
                     opened:false
                 })
-            });
+            );
               
         }
         
+    }
+
+    createComponents(){
+        var oldComponents=this.state.components
+        var components=[]
+        var messageBox;
+        for(var x in this.state.dialogs){
+                messageBox=(
+                   
+                        <MessageBubble
+                            from={this.state.dialogs[x].from}
+                            message={this.state.dialogs[x].message}
+
+                        />
+                )
+                components.push(messageBox);
+        }
+
+        this.setState({
+            components
+        })
+
+        return this.state.components
+
+
     }
 
     render() {
@@ -57,28 +88,36 @@ export default class MessageCard extends Component {
                 >
                     <Text> Canlı Destek </Text>
                 </TouchableOpacity>
+                {this.state.opened? 
+                 <View style={styles.chatView}>
+                 <ScrollView style={styles.dialogView}>
 
-                  <View style={styles.chatView}>
-                  <View style={styles.dialogView}>
-                      <Text> sa </Text>
-                  </View>
-                  <View style={styles.bottomBarView}>
-                      <TextInput
-                          style={styles.inputView}
-                          placeholder="Your Message"
-                      />
-                       <Image
-                  source={{
-                      uri: 'https://image.flaticon.com/icons/png/512/1933/1933005.png',
-                    }}
-                  style={styles.image}
-                  resizeMode="center"
-              />
-                  </View>
-                  
-                  
-              </View>
-              
+
+                    {this.state.components}
+
+                 </ScrollView>
+                 <View style={styles.bottomBarView}>
+                     <TextInput
+                         style={styles.inputView}
+                         placeholder="Your Message"
+                     />
+                    <TouchableOpacity style={{alignItems:"center",justifyContent:"center"}}>
+                        <Image
+                            source={{
+                                uri: 'https://image.flaticon.com/icons/png/512/1933/1933005.png',
+                            }}
+                            style={styles.image}
+                            resizeMode="center"
+                        />
+                    </TouchableOpacity>
+                 </View>
+                 
+                 
+             </View>
+             
+                
+                : null}
+                 
 
             </Animated.View>
         )
@@ -91,7 +130,7 @@ const styles = StyleSheet.create({
     container:{
         position:"absolute",
         width:screenHeight*0.5,
-        height:screenHeight*0.6,
+        //height:screenHeight*0.6,
         right:20,
         bottom:0,
 
@@ -165,5 +204,7 @@ const styles = StyleSheet.create({
         width:screenWidth*0.03,
         height:screenHeight*0.03,
         alignSelf:"center"
-    }
+    },
+
+ 
 })
