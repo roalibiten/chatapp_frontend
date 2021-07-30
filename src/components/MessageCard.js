@@ -11,7 +11,10 @@ export default class MessageCard extends Component {
             opened:false,
             dialogs:[{from:"employee",message:"Merhaba! Hosgeldiniz."},{from:"user",message:"Merhaba!."},{from:"user",message:"Merhaba!."},{from:"employee",message:"Merhaba! Hosgeldiniz."},{from:"user",message:"Merhaba!."},{from:"employee",message:"Merhaba! Hosgeldiniz."},{from:"user",message:"Merhaba!."},{from:"employee",message:"Merhaba! Hosgeldiniz."},{from:"user",message:"Merhaba!."}],
             components:[],
-            knownUser:false
+            knownUser:false,
+            usersName:"",
+            usersMailAddress:"",
+            message:""
         };
 
         this.yPosition=new Animated.Value(0);
@@ -56,7 +59,7 @@ export default class MessageCard extends Component {
 
     createComponents(){
         var oldComponents=this.state.components
-        var components=[]
+        var components=this.state.components
         var messageBox;
         for(var x in this.state.dialogs){
                 messageBox=(
@@ -71,12 +74,39 @@ export default class MessageCard extends Component {
         }
 
         this.setState({
-            components
+            components,
+            dialogs:[]
         })
 
-        return this.state.components
 
 
+
+
+    }
+
+    personalInfoContinue(){
+        if(this.state.usersMailAddress!="" && this.state.usersMailAddress!=""){
+            this.setState({
+                knownUser:true
+            })
+        }
+    }
+
+    sendMessage(){
+
+        var message={
+            from:this.state.usersName,
+            message:this.state.message
+        }
+
+        this.setState({
+            dialogs:this.state.dialogs.push(message),
+            message:""
+        })
+        this.createComponents()
+
+        
+        
     }
 
     render() {
@@ -97,7 +127,9 @@ export default class MessageCard extends Component {
 
                     
 <View>
-<ScrollView style={styles.dialogView}>
+<ScrollView style={styles.dialogView}
+
+>
 
 
 {this.state.components}
@@ -107,8 +139,14 @@ export default class MessageCard extends Component {
  <TextInput
      style={styles.inputView}
      placeholder="Your Message"
+     value={this.state.message}
+     onChangeText={(message) => this.setState({ message })}
+
+
  />
-<TouchableOpacity style={{alignItems:"center",justifyContent:"center"}}>
+<TouchableOpacity style={{alignItems:"center",justifyContent:"center"}}
+    onPress={()=>{this.sendMessage()}}
+>
     <Image
         source={{
             uri: 'https://image.flaticon.com/icons/png/512/1933/1933005.png',
@@ -121,17 +159,30 @@ export default class MessageCard extends Component {
 </View>
                     
                     :
-                    
                     <View>
+                    <Text style={styles.personalInfoTitle}>Kullanici Bilgileri</Text>
+                    <View style={styles.personalInfoView}>
                         <TextInput
+                            style={styles.personalInfoInput}
                             placeholder="Ad Soyad"
+                            onChangeText={(usersName) => this.setState({ usersName })}
 
                         />
                         <TextInput
+                            style={styles.personalInfoInput}
                             placeholder="Mail Adresi"
+                            onChangeText={(usersMailAddress) => this.setState({ usersMailAddress })}
+
                             
                         />
-                    </View>    
+                        <TouchableOpacity style={styles.personelInfoButton}
+                            onPress={()=>{this.personalInfoContinue()}}
+                        >
+                            <Text style={{color:"white"}}>Ilerle</Text>
+                        </TouchableOpacity>
+                        
+                        </View>    
+                    </View>
                     
                     
                     
@@ -232,6 +283,52 @@ const styles = StyleSheet.create({
         height:screenHeight*0.03,
         alignSelf:"center"
     },
+    personalInfoView:{
+        width:screenHeight*0.4,
+        height:screenHeight*0.2,
+        alignSelf:"center",
+        marginTop:screenHeight*0.15,
+        borderWidth:1,
+        borderRadius:10,
+        borderColor:"#FFCD7C",
+        shadowColor: "#000",
+        shadowOffset: {
+	        width: 0,
+	        height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+
+        elevation: 5,
+        alignItems:"center",
+        justifyContent:"center"
+    },
+    personalInfoInput:{
+        width:screenHeight*0.2,
+        borderWidth:1,
+        borderColor:"#DDDDDD",
+        borderRadius:5,
+        marginTop:7,
+        padding:4
+    },
+    personalInfoTitle:{
+        fontSize:16,
+        fontWeight:"bold",
+        alignSelf:"center",
+        position:"absolute",
+        top:screenHeight*0.1,
+        color:"#8F8F8F"
+
+    },
+    personelInfoButton:{
+        width:screenHeight*0.1,
+        
+        borderRadius:5,
+        marginTop:15,
+        padding:4,
+        alignItems:"center",
+        backgroundColor:"#FFAF1A",
+    }
 
  
 })
