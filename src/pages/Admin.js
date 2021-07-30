@@ -41,6 +41,11 @@ export default class admin extends Component {
 
                     </View>
 
+
+                    <View style={styles.personalInfoView}>
+
+                    </View>
+
                 </View>
                 
                 :
@@ -147,11 +152,18 @@ const styles = StyleSheet.create({
 
     },
     messageView:{
-        width:screenWidth*0.7,
+        width:screenWidth*0.5,
         height:screenHeight*0.9,
         backgroundColor:"blue",
+      
+    },
+    personalInfoView:{
+        width:screenWidth*0.2,
+        height:screenHeight*0.9,
+        backgroundColor:"white",
         borderRadius:7,
         borderTopLeftRadius:0,
         borderBottomLeftRadius:0
-    }
+    },
+
 })
