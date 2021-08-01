@@ -1,6 +1,9 @@
 import React, { Component } from 'react'
 import { Text, StyleSheet, View,TextInput,Dimensions,TouchableOpacity } from 'react-native'
 
+import AdminMessageBox from '../components/AdminMessageBox';
+
+
 export default class admin extends Component {
     constructor(props) {
         super(props);
@@ -8,9 +11,13 @@ export default class admin extends Component {
         this.state = {
             username:"",
             password:"",
-            loged:"false"
+            loged:"false",
+
+            
+
         };
       }
+
 
     login(username,password){
         console.log(this.state.username+this.state.password)
@@ -30,23 +37,7 @@ export default class admin extends Component {
             <View style={styles.mainContainer}>
                 {this.state.loged==true? 
                 
-                <View style={styles.adminMessageBoxView}>
-
-                    <View style={styles.usersView}>
-
-                    </View>
-
-
-                    <View style={styles.messageView}>
-
-                    </View>
-
-
-                    <View style={styles.personalInfoView}>
-
-                    </View>
-
-                </View>
+                    <AdminMessageBox/>
                 
                 :
 
@@ -133,37 +124,5 @@ const styles = StyleSheet.create({
         alignSelf:"center"
     },
 
-    //
-    adminMessageBoxView:{
-        width:screenWidth*0.9,
-        height:screenHeight*0.9,
-        backgroundColor:"white",
-        borderRadius:7,
-        flexDirection:"row"
-    },
-    usersView:{
-        width:screenWidth*0.2,
-        height:screenHeight*0.9,
-        backgroundColor:"red",
-        borderRadius:7,
-        borderTopRightRadius:0,
-        borderBottomRightRadius:0
-
-
-    },
-    messageView:{
-        width:screenWidth*0.5,
-        height:screenHeight*0.9,
-        backgroundColor:"blue",
-      
-    },
-    personalInfoView:{
-        width:screenWidth*0.2,
-        height:screenHeight*0.9,
-        backgroundColor:"white",
-        borderRadius:7,
-        borderTopLeftRadius:0,
-        borderBottomLeftRadius:0
-    },
-
+    
 })
