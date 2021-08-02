@@ -1,9 +1,15 @@
 import React, { Component } from 'react'
 import { Text, StyleSheet, View,Dimensions,TouchableOpacity } from 'react-native'
 
-export default class UserView extends Component {
+export default class AdminUserView extends Component {
     render() {
         return (
+            <TouchableOpacity 
+            onPress={()=>{
+                this.props.changeDialog(this.props.name)
+                
+            }}
+        >
             <View style={styles.userView}>
                 <View style={styles.nameView}>
                     <Text style={styles.nameText}> {this.props.name} </Text>
@@ -12,6 +18,7 @@ export default class UserView extends Component {
                     <Text style={styles.lastMessageText}> {this.props.lastMessage} </Text>
                 </View>
             </View>
+            </TouchableOpacity>
         )
     }
 }
@@ -21,10 +28,7 @@ const screenHeight = Dimensions.get('window').height;
 const styles = StyleSheet.create({
     userView:{
         height:screenHeight*0.1,
-        marginTop:7,
-        backgroundColor:"#E5E5E5",
-
-
+        backgroundColor:"#ECECEC",
         shadowColor: "#000",
         shadowOffset: {
 	        width: 0,

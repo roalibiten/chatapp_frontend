@@ -3,11 +3,24 @@ import { Text, StyleSheet, View,Dimensions } from 'react-native'
 
 export default class MessageBubble extends Component {
     render() {
+        console.log("asdas")
         return (
-            <View>
-                <View style={this.props.from=="employee"? styles.employeeBubbleView:  styles.userBubbleView}>
+            <View style={styles.container}>
+                {this.props.screen=="consumerScreen"? 
+                     <View style={this.props.from=="employee" ? styles.employeeBubbleView:  styles.userBubbleView}>
+                     <Text> {this.props.message} </Text>
+                     <Text style={this.props.from=="employee" ? styles.employeeTimeText:  styles.userTimeText}> {this.props.time} </Text>
+
+                    </View>
+                :
+                    <View style={this.props.from=="user" ? styles.employeeBubbleView:  styles.userBubbleView}>
+    
                     <Text> {this.props.message} </Text>
-                </View>
+                    <Text style={this.props.from=="user" ? styles.employeeTimeText:  styles.userTimeText}> {this.props.time} </Text>
+
+                    </View>
+                }
+
 
             </View>
             
@@ -19,9 +32,11 @@ export default class MessageBubble extends Component {
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 const styles = StyleSheet.create({
-    
+    container:{
+    },
     employeeBubbleView:{
-        marginVertical:screenHeight*0.01,
+
+        marginVertical:screenHeight*0.015,
 
         maxWidth:screenHeight*0.4,
         backgroundColor:"#FFE1B0",
@@ -45,7 +60,9 @@ const styles = StyleSheet.create({
         elevation: 5,
     },
     userBubbleView:{
-        marginVertical:screenHeight*0.01,
+        flexDirection:"row",
+
+        marginVertical:screenHeight*0.015,
 
         maxWidth:screenHeight*0.4,
 
@@ -70,5 +87,21 @@ const styles = StyleSheet.create({
 
         elevation: 5,
     },
+    employeeTimeText:{
+        position:"absolute",
+        left:0,
+        marginTop:30,
+        fontSize:10,
+        color:"gray"
+
+    },
+    userTimeText:{
+        position:"absolute",
+        right:0,
+        marginTop:30,
+        fontSize:10,
+        color:"gray",
+    }
+
 
 })

@@ -1,8 +1,7 @@
 import React, { Component } from 'react'
 import { Text, StyleSheet, View,TextInput,Dimensions,TouchableOpacity } from 'react-native'
 
-import AdminMessageBox from '../components/AdminMessageBox';
-
+import AdminMessageBox from '../screens/AdminMessageBox';
 
 export default class admin extends Component {
     constructor(props) {

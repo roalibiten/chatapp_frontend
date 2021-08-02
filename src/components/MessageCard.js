@@ -9,7 +9,15 @@ export default class MessageCard extends Component {
         
         this.state = {
             opened:false,
-            dialogs:[{from:"employee",message:"Merhaba! Hosgeldiniz."},{from:"user",message:"Merhaba!."},{from:"user",message:"Merhaba!."},{from:"employee",message:"Merhaba! Hosgeldiniz."},{from:"user",message:"Merhaba!."},{from:"employee",message:"Merhaba! Hosgeldiniz."},{from:"user",message:"Merhaba!."},{from:"employee",message:"Merhaba! Hosgeldiniz."},{from:"user",message:"Merhaba!."}],
+            dialogs:[{from:"employee",message:"Merhaba! Hosgeldiniz.",time:"14.30"},
+            {from:"user",message:"Merhaba!.",time:"14.31"},
+            {from:"user",message:"Merhaba!.",time:"14.31"},
+            {from:"employee",message:"Merhaba! Hosgeldiniz.",time:"14.33"},
+            {from:"user",message:"Merhaba!.",time:"14.34"},
+            {from:"employee",message:"Merhaba! Hosgeldiniz.",time:"14.35"},
+            {from:"user",message:"Merhaba!.",time:"14.35"},
+            {from:"employee",message:"Merhaba! Hosgeldiniz.",time:"14.35"},
+            {from:"user",message:"Merhaba!.",time:"14.36"}],
             components:[],
             knownUser:false,
             usersName:"",
@@ -67,6 +75,9 @@ export default class MessageCard extends Component {
                         <MessageBubble
                             from={this.state.dialogs[x].from}
                             message={this.state.dialogs[x].message}
+                            screen="consumerScreen"
+                            time={this.state.dialogs[x].time}
+
 
                         />
                 )
