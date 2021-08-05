@@ -1,9 +1,14 @@
 import React, { Component } from 'react'
 import { Text, StyleSheet, View,TextInput,Dimensions,TouchableOpacity,Animated ,Image,ScrollView} from 'react-native'
+import axios from 'axios';
+import SockJS from "sockjs-client"
+import StompClient from "react-stomp-client";
 
 import MessageBubble from './MessageBubble';
+import { Stomp } from '@stomp/stompjs';
+var stompClient=null;
 export default class MessageCard extends Component {
-
+    
     constructor(props) {
         super(props);
         
@@ -22,15 +27,18 @@ export default class MessageCard extends Component {
             knownUser:false,
             usersName:"",
             usersMailAddress:"",
-            message:""
+            message:"",
         };
 
         this.yPosition=new Animated.Value(0);
+        
 
     }
 
+
     componentDidMount(){
         this.createComponents()
+        
     }
 
     animation(){
@@ -95,13 +103,38 @@ export default class MessageCard extends Component {
 
     }
 
-    personalInfoContinue(){
+    async personalInfoContinue(){
+        this.setState({knownUser: true});
+
+
         if(this.state.usersMailAddress!="" && this.state.usersMailAddress!=""){
-            this.setState({
-                knownUser:true
-            })
+
+              
+                /*try{
+                    const response = await axios.get('http://localhost:8080/chat').then((res)=>{
+                        console.log(res)
+
+                    })
+
+                }catch(error){
+                    console.log("error"+error)
+
+                }*/
+                var socket = new SockJS('http://localhost:8080/chat' );
+                stompClient = Stomp.over(socket);
+                stompClient.connect({}, function(frame) {
+                    //setConnected(true);
+                    console.log('Connected: ' + frame);
+                    stompClient.subscribe('/topic', function (message) {
+                        console.log(message);
+                        //handleReceivedMessage(JSON.parse(message.body));
+                    });
+                });
+            
+            
         }
     }
+
 
     sendMessage(){
 
@@ -109,6 +142,11 @@ export default class MessageCard extends Component {
             from:this.state.usersName,
             message:this.state.message
         }
+
+
+            stompClient.send("/toEmployee", {},
+            JSON.stringify({'sender':this.state.usersName, 'message':this.state.message}));
+
 
         this.setState({
             dialogs:this.state.dialogs.push(message),
