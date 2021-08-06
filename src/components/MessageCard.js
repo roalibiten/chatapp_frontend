@@ -2,6 +2,9 @@ import React, { Component } from 'react'
 import { Text, StyleSheet, View,TextInput,Dimensions,TouchableOpacity,Animated ,Image,ScrollView} from 'react-native'
 import SockJS from "sockjs-client"
 import { Stomp } from '@stomp/stompjs';
+import axios from 'axios'
+import {isMobile} from 'react-device-detect';
+
 
 import MessageBubble from './MessageBubble';
 
@@ -28,6 +31,8 @@ export default class MessageCard extends Component {
             usersName:"",
             usersMailAddress:"",
             message:"",
+            device:"unknown",
+            IP:"unknown"
         };
 
         this.yPosition=new Animated.Value(0);
@@ -38,6 +43,27 @@ export default class MessageCard extends Component {
 
     componentDidMount(){
         this.createComponents()
+        this.getDeviceInfo();
+
+        
+    }
+    async getDeviceInfo () {
+        const res = await axios.get('https://geolocation-db.com/json/')
+        console.log("IPPPP"+res.data.IPv4);
+        var IP=res.data.IPv4;
+        var device="unknown"
+        if(isMobile){
+            device="Mobile"
+        }else{
+            device="Computer"
+        }
+        console.log("DEVICEE"+device)
+        this.setState({
+            IP,
+            device
+        })
+        
+
         
     }
 
@@ -128,15 +154,18 @@ export default class MessageCard extends Component {
 
 
     sendMessage(){
-
+        console.log("IP ADRES"+this.state.IP)
         var message={
-            from:this.state.usersName,
-            message:this.state.message
+            sender:this.state.usersName,
+            message:this.state.message,
+            sendTo:"employee",
+            ip:this.state.IP.toString(),
+            device:this.state.device
         }
 
 
             stompClient.send("/toEmployee", {},
-            JSON.stringify({'sender':this.state.usersName, 'message':this.state.message,"sendTo":"employee"}));
+            JSON.stringify(message));
 
 
         this.setState({

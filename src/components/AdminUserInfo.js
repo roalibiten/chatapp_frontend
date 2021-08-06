@@ -7,12 +7,12 @@ export default class AdminUserInfo extends Component {
             <View style={styles.container}>
                 <View style={styles.row}>
                     <Text style={styles.titleText}> Ad Soyad: </Text>
-                    <Text style={styles.descText}> James HARDEN </Text>
+                    <Text style={styles.descText}> {this.props.name} </Text>
 
                 </View>
                 <View style={styles.row}>
                     <Text style={styles.titleText}> IP: </Text>
-                    <Text style={styles.descText}> 192.168.1.2</Text>
+                    <Text style={styles.descText}> {this.props.IP}</Text>
 
                 </View>
                 <View style={styles.row}>
@@ -22,7 +22,7 @@ export default class AdminUserInfo extends Component {
                 </View>
                 <View style={styles.row}>
                     <Text style={styles.titleText}> Cihaz: </Text>
-                    <Text style={styles.descText}> Laptop </Text>
+                    <Text style={styles.descText}> {this.props.device} </Text>
 
                 </View>
             </View>

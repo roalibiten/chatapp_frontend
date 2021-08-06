@@ -26,28 +26,16 @@ export default class AdminMessageBox extends Component {
 
 
             AdminDialogScreenComponent:(
-                <AdminDialogScreen name="James HARDEN"/>
+                <AdminDialogScreen name="Lutfen konusmak icin birinin yazmasini bekleyiniz ve seciniz."/>
 
             ),
             AdminUserInfoComponent:(
-                <AdminUserInfo name="James HARDEN"/>
+                <AdminUserInfo name=""/>
 
             ),
 
             dialogId:0,
-            users:[{dialogId:0,name:"James HARDEN", lastMessage:"What is the solution about your mac m1 external display problem?"},
-                    {dialogId:1,name:"Steph Curry", lastMessage:"What tha fuck is harden saying man?"},
-                    {dialogId:2,name:"James HARDEN", lastMessage:"What is the solution about your mac m1 external display problem?"},
-                    {dialogId:3,name:"Steph Curry", lastMessage:"What tha fuck is harden saying man?"},{name:"James HARDEN", lastMessage:"What is the solution about your mac m1 external display problem?"},
-                    {dialogId:4,name:"Steph Curry", lastMessage:"What tha fuck is harden saying man?"},{name:"James HARDEN", lastMessage:"What is the solution about your mac m1 external display problem?"},
-                    {dialogId:5,name:"Steph Curry", lastMessage:"What tha fuck is harden saying man?"},{name:"James HARDEN", lastMessage:"What is the solution about your mac m1 external display problem?"},
-                    {dialogId:6,name:"Steph Curry", lastMessage:"What tha fuck is harden saying man?"},{name:"James HARDEN", lastMessage:"What is the solution about your mac m1 external display problem?"},
-                    {dialogId:7,name:"Steph Curry", lastMessage:"What tha fuck is harden saying man?"},{name:"James HARDEN", lastMessage:"What is the solution about your mac m1 external display problem?"},
-                    {dialogId:8,name:"Steph Curry", lastMessage:"What tha fuck is harden saying man?"},{name:"James HARDEN", lastMessage:"What is the solution about your mac m1 external display problem?"},
-                    {dialogId:9,name:"Steph Curry", lastMessage:"What tha fuck is harden saying man?"},{name:"James HARDEN", lastMessage:"What is the solution about your mac m1 external display problem?"},
-                    {dialogId:10,name:"Steph Curry", lastMessage:"What tha fuck is harden saying man?"},{name:"James HARDEN", lastMessage:"What is the solution about your mac m1 external display problem?"},
-                    {dialogId:11,name:"Steph Curry", lastMessage:"What tha fuck is harden saying man?"},{name:"James HARDEN", lastMessage:"What is the solution about your mac m1 external display problem?"},
-                    {dialogId:12,name:"Steph Curry", lastMessage:"What tha fuck is harden saying man?"},
+            users:[
             ],
             usersComponents:[],
 
@@ -58,9 +46,10 @@ export default class AdminMessageBox extends Component {
     
    
     async componentDidMount(){
-        this.createUsersView()
+        this.createUsersView(this.state.users)
 
         var socket = new SockJS('http://localhost:8080/chat' );
+                const _this=this;
                 stompClient = Stomp.over(socket);
                 stompClient.connect({}, function(frame) {
                     //setConnected(true);
@@ -68,50 +57,80 @@ export default class AdminMessageBox extends Component {
                     stompClient.subscribe('/topic', function (message) {
                        
                         console.log(JSON.parse(message.body));
-
-                        //handleReceivedMessage(JSON.parse(message.body));
+                        
+                        _this.receivedNewMessage(JSON.parse(message.body));
                     });
                 });
     }
 
+    receivedNewMessage(message){
+        console.log("YENI MESAJ"+message)
+        var lastMessage={dialogId:1,name:message.sender, lastMessage:message.message,IP:message.ip,device:message.device}
+        var users=this.state.users;
+        var newSender=true;
+        if(users.length>0){
+            console.log("INSAN VAR")
+        for(var x in users){
+
+            if(users[x].name==lastMessage.name){
+                console.log("SAME PERSOONN"+users[x].name+"--"+lastMessage.name)
+                users[x].lastMessage=message.message
+                newSender=false
+            }
+        }
+        }
+        if(newSender==true){
+            users.push(lastMessage)
+        }
+
+        this.setState({
+            users
+        })
+        this.createUsersView(users)
+    }
    
 
-    createUsersView(){
-        var usersComponents=this.state.usersComponents
+    createUsersView(users){
+        var usersComponents=[]
         var userView;
-        var users=[];
        
-        var itemId=0;
-        for(var x in this.state.users){
+        for(var x in users){
             
             userView=(
                    
                         <AdminUserView
-                            name={this.state.users[x].name}
-                            lastMessage={this.state.users[x].lastMessage}
-                            changeDialog={(x)=>{this.changeDialog(x)}}
-                            dialogId={this.state.users[x].dialogId}
+                            name={users[x].name}
+                            lastMessage={users[x].lastMessage}
+                            changeDialog={()=>{this.changeDialog(users[x].name,users[x].dialogId,users[x].IP,users[x].device)}}
+                            dialogId={users[x].dialogId}
 
                         />
                 )
                 usersComponents.push(userView);
-                itemId++;
         }
+
+        
 
         this.setState({
             usersComponents,
+
         })
 
 
 
     }
 
-    changeDialog(name,dialogId){
+    changeDialog(name,dialogId,IP,device){
+        console.log(device+IP)
         this.setState({
             choosenUserName:name,
             dialogId,
             AdminDialogScreenComponent:(
-                <AdminDialogScreen name={name} dialogId={dialogId}/>
+                <AdminDialogScreen name={name} dialogId={dialogId} IP={IP} device={device} />
+
+            ),
+            AdminUserInfoComponent:(
+                <AdminUserInfo name={name} dialogId={dialogId} IP={IP} device={device}/>
 
             ),
         })
