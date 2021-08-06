@@ -13,10 +13,10 @@ export default class MessageBubble extends Component {
 
                     </View>
                 :
-                    <View style={this.props.from=="user" ? styles.employeeBubbleView:  styles.userBubbleView}>
+                    <View style={this.props.from!="employee" ? styles.employeeBubbleView:  styles.userBubbleView}>
     
                     <Text> {this.props.message} </Text>
-                    <Text style={this.props.from=="user" ? styles.employeeTimeText:  styles.userTimeText}> {this.props.time} </Text>
+                    <Text style={this.props.from!="employee" ? styles.employeeTimeText:  styles.userTimeText}> {this.props.time} </Text>
 
                     </View>
                 }

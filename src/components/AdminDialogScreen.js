@@ -36,18 +36,32 @@ export default class AdminDialogScreen extends Component {
         this.createComponents()
 
         var socket = new SockJS('http://localhost:8080/chat' );
+                const _this=this;
+
                 stompClient = Stomp.over(socket);
                 stompClient.connect({}, function(frame) {
                     //setConnected(true);
                     console.log('Connected: ' + frame);
                     stompClient.subscribe('/topic', function (message) {
                         console.log(message);
-                        //handleReceivedMessage(JSON.parse(message.body));
+                        _this.receivedNewMessage(JSON.parse(message.body));
                     });
                 });
     }
 
-
+    receivedNewMessage(message){
+        console.log("YENI MESAJ"+message+this.props.name+message.from)
+        var dialogs=this.state.dialogs;
+        if(this.props.name==message.sender){
+            var lastMesssage={from:message.sender,message:message.message,time:"14.30"}
+            dialogs.push(lastMesssage);
+            this.setState({
+                dialogs
+            })
+            this.createComponents()
+        }
+       
+    }
 
     sendMessage(){
 
@@ -74,6 +88,7 @@ export default class AdminDialogScreen extends Component {
     }
 
     createComponents(){
+        console.log("dialogs"+this.state.dialogs[0])
         var components=this.state.components
         var messageBox;
         for(var x in this.state.dialogs){

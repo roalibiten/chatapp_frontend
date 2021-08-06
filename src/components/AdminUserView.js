@@ -6,7 +6,7 @@ export default class AdminUserView extends Component {
         return (
             <TouchableOpacity 
             onPress={()=>{
-                this.props.changeDialog(this.props.name)
+                this.props.changeDialog(this.props.name,this.props.IP,this.props.device)
                 
             }}
         >

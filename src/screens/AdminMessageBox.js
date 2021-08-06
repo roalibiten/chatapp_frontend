@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Text, StyleSheet, View ,Dimensions,ScrollView,TouchableOpacity} from 'react-native'
+import { Text, StyleSheet, View ,Dimensions,ScrollView,TouchableOpacity,TextInput,Image} from 'react-native'
 import SockJS from "sockjs-client"
 import { Stomp } from '@stomp/stompjs';
 
@@ -25,20 +25,21 @@ export default class AdminMessageBox extends Component {
             choosenUserName:"James HARDEN",
 
 
-            AdminDialogScreenComponent:(
-                <AdminDialogScreen name="Lutfen konusmak icin birinin yazmasini bekleyiniz ve seciniz."/>
-
-            ),
+           
             AdminUserInfoComponent:(
                 <AdminUserInfo name=""/>
 
             ),
 
             dialogId:0,
-            users:[
-            ],
+            
             usersComponents:[],
+            username:"Lutfen konusmak icin birinin yazmasini bekleyiniz ve seciniz.",
 
+            users:[] ,            
+            components:[],
+            message:"",
+            dialogId:0,
 
         };
       }
@@ -47,7 +48,6 @@ export default class AdminMessageBox extends Component {
    
     async componentDidMount(){
         this.createUsersView(this.state.users)
-
         var socket = new SockJS('http://localhost:8080/chat' );
                 const _this=this;
                 stompClient = Stomp.over(socket);
@@ -65,30 +65,92 @@ export default class AdminMessageBox extends Component {
 
     receivedNewMessage(message){
         console.log("YENI MESAJ"+message)
-        var lastMessage={dialogId:1,name:message.sender, lastMessage:message.message,IP:message.ip,device:message.device}
+        var lastMessage={from:message.sender, message:message.message,IP:message.ip,device:message.device}
         var users=this.state.users;
         var newSender=true;
         if(users.length>0){
             console.log("INSAN VAR")
         for(var x in users){
 
-            if(users[x].name==lastMessage.name){
-                console.log("SAME PERSOONN"+users[x].name+"--"+lastMessage.name)
+            if(users[x].name==lastMessage.from){
+                console.log("SAME PERSOONN"+users[x].name+"--"+lastMessage.from)
                 users[x].lastMessage=message.message
+                users[x].messages.push(lastMessage)
                 newSender=false
+                if(users[x].name==this.state.username){
+                    this.createComponent(lastMessage)
+
+                }
             }
         }
         }
         if(newSender==true){
-            users.push(lastMessage)
+            var user={name:message.sender,messages:[{from:message.sender, message:message.message,IP:message.ip,device:message.device}],lastMessage:message.message}
+
+            users.push(user)
+            
         }
+
 
         this.setState({
             users
         })
         this.createUsersView(users)
+        console.log(this.state.users)
     }
-   
+    createComponent(message){
+        var components=this.state.components
+        var messageBox=(
+                   
+                        <MessageBubble
+                            from={message.from}
+                            message={message.message}
+                            screen="employeeScreen"
+                            time={message.time}
+
+                        />
+                )
+                components.push(messageBox);
+            
+        
+        console.log(components)
+        this.setState({
+            components,
+
+        })
+    }
+    createComponents(){
+        var components=[]
+        
+        var messageBox;
+        for(var x in this.state.users){
+                console.log("TAMAM")
+                if(this.state.users[x]==this.state.username){
+            for(var y in this.state.users[x].messages){
+                messageBox=(
+                   
+                        <MessageBubble
+                            from={this.state.users[x].messages[y].from}
+                            message={this.state.users[x].messages[y].message}
+                            screen="employeeScreen"
+                            IP={this.state.users[x].messages[this.state.users[x].messages.length-1].IP}
+                            device={this.state.users[x].messages[this.state.users[x].messages.length-1].device}
+
+                            time={this.state.users[x].messages[y].time}
+
+                        />
+                )
+                components.push(messageBox);
+            }}
+        }
+        console.log(components)
+        this.setState({
+            components,
+            dialogs:[],
+
+        })
+        
+    }
 
     createUsersView(users){
         var usersComponents=[]
@@ -101,7 +163,7 @@ export default class AdminMessageBox extends Component {
                         <AdminUserView
                             name={users[x].name}
                             lastMessage={users[x].lastMessage}
-                            changeDialog={()=>{this.changeDialog(users[x].name,users[x].dialogId,users[x].IP,users[x].device)}}
+                            changeDialog={(name,IP,device)=>{this.changeDialog(name,IP,device)}}
                             dialogId={users[x].dialogId}
 
                         />
@@ -120,20 +182,26 @@ export default class AdminMessageBox extends Component {
 
     }
 
-    changeDialog(name,dialogId,IP,device){
-        console.log(device+IP)
-        this.setState({
-            choosenUserName:name,
-            dialogId,
-            AdminDialogScreenComponent:(
-                <AdminDialogScreen name={name} dialogId={dialogId} IP={IP} device={device} />
+    changeDialog(name,IP,device){
+        
+        console.log(name)
+        if(name!=this.state.username){
+            
+            console.log(device+IP)
+            this.setState({
+                choosenUserName:name,
+                username:name,
+                AdminUserInfoComponent:(
+                    <AdminUserInfo name={name} IP={IP} device={device}/>
+    
+                ),
+                components:[]
+            })
+            this.createComponents();
 
-            ),
-            AdminUserInfoComponent:(
-                <AdminUserInfo name={name} dialogId={dialogId} IP={IP} device={device}/>
+        }
+       
 
-            ),
-        })
     }
 
 
@@ -152,7 +220,44 @@ export default class AdminMessageBox extends Component {
 
 
                     <View style={styles.messageView}>
-                        {this.state.AdminDialogScreenComponent}
+                    
+
+
+                    <View style={styles.container}>
+                        <View style={styles.topBar}>
+                            <Text style={styles.nameText}> {this.state.username} </Text>
+                        </View>
+
+                        <ScrollView >
+                            {this.state.components}
+
+                        </ScrollView>
+
+                        <View style={styles.bottomBarView}>
+                        <TextInput
+                            style={styles.inputView}
+                            placeholder="Your Message"
+                            value={this.state.message}
+                            onChangeText={(message) => this.setState({ message })}
+
+
+                        />
+                        <TouchableOpacity style={{alignItems:"center",justifyContent:"center"}}
+                            onPress={()=>{this.sendMessage()}}
+                        >   
+                        <Image
+                            source={{
+                                uri: 'https://image.flaticon.com/icons/png/512/1933/1933005.png',
+                            }}
+                            style={styles.image}
+                            resizeMode="center"
+                        />
+                        </TouchableOpacity>
+                    </View>
+                </View>
+
+
+
                     </View>
 
 
@@ -208,6 +313,60 @@ const styles = StyleSheet.create({
         borderTopLeftRadius:0,
         borderBottomLeftRadius:0,
         backgroundColor:"#ECECEC",
+
+    },
+
+
+
+
+    /////
+
+    container:{
+        backgroundColor:"white",
+        width:screenWidth*0.5,
+        height:screenHeight*0.9,
+
+    },
+    topBar:{
+        width:screenWidth*0.5,
+        height:screenHeight*0.06,
+        justifyContent:"center",
+        paddingLeft:10,
+        backgroundColor:"#FFAF1A",
+
+        shadowColor: "#000",
+        shadowOffset: {
+	    width: 0,
+	    height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+
+        elevation: 5,
+
+    },
+    nameText:{
+        fontWeight:"bold"
+    },
+    bottomBarView:{
+        flexDirection:"row",
+        borderTopWidth:1,
+
+        borderColor:"#DDDDDD",
+    },
+    image:{
+        width:screenWidth*0.03,
+        height:screenHeight*0.03,
+        alignSelf:"center"
+    },
+    inputView:{
+        width:screenWidth*0.45,
+        height:screenHeight*0.05,
+        justifyContent:"center",
+        paddingHorizontal:6,
+        marginBottom:6,
+
+        
 
     },
 
