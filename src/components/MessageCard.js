@@ -1,12 +1,12 @@
 import React, { Component } from 'react'
 import { Text, StyleSheet, View,TextInput,Dimensions,TouchableOpacity,Animated ,Image,ScrollView} from 'react-native'
-import axios from 'axios';
 import SockJS from "sockjs-client"
-import StompClient from "react-stomp-client";
+import { Stomp } from '@stomp/stompjs';
 
 import MessageBubble from './MessageBubble';
-import { Stomp } from '@stomp/stompjs';
+
 var stompClient=null;
+
 export default class MessageCard extends Component {
     
     constructor(props) {
@@ -110,16 +110,6 @@ export default class MessageCard extends Component {
         if(this.state.usersMailAddress!="" && this.state.usersMailAddress!=""){
 
               
-                /*try{
-                    const response = await axios.get('http://localhost:8080/chat').then((res)=>{
-                        console.log(res)
-
-                    })
-
-                }catch(error){
-                    console.log("error"+error)
-
-                }*/
                 var socket = new SockJS('http://localhost:8080/chat' );
                 stompClient = Stomp.over(socket);
                 stompClient.connect({}, function(frame) {
@@ -130,6 +120,7 @@ export default class MessageCard extends Component {
                         //handleReceivedMessage(JSON.parse(message.body));
                     });
                 });
+           
             
             
         }
@@ -145,7 +136,7 @@ export default class MessageCard extends Component {
 
 
             stompClient.send("/toEmployee", {},
-            JSON.stringify({'sender':this.state.usersName, 'message':this.state.message}));
+            JSON.stringify({'sender':this.state.usersName, 'message':this.state.message,"sendTo":"employee"}));
 
 
         this.setState({

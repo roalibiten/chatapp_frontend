@@ -1,10 +1,16 @@
 import React, { Component } from 'react'
 import { Text, StyleSheet, View ,Dimensions,ScrollView,TouchableOpacity} from 'react-native'
+import SockJS from "sockjs-client"
+import { Stomp } from '@stomp/stompjs';
 
 import MessageBubble from '../components/MessageBubble';
 import AdminUserView from '../components/AdminUserView';
 import AdminDialogScreen from '../components/AdminDialogScreen';
 import AdminUserInfo from '../components/AdminUserInfo';
+
+var stompClient=null;
+
+
 export default class AdminMessageBox extends Component {
 
     constructor(props) {
@@ -14,7 +20,10 @@ export default class AdminMessageBox extends Component {
             username:"",
             password:"",
             loged:"false",
+            message:"",
+
             choosenUserName:"James HARDEN",
+
 
             AdminDialogScreenComponent:(
                 <AdminDialogScreen name="James HARDEN"/>
@@ -47,9 +56,25 @@ export default class AdminMessageBox extends Component {
       }
 
     
-    componentDidMount(){
+   
+    async componentDidMount(){
         this.createUsersView()
+
+        var socket = new SockJS('http://localhost:8080/chat' );
+                stompClient = Stomp.over(socket);
+                stompClient.connect({}, function(frame) {
+                    //setConnected(true);
+                    console.log('Connected: ' + frame);
+                    stompClient.subscribe('/topic', function (message) {
+                       
+                        console.log(JSON.parse(message.body));
+
+                        //handleReceivedMessage(JSON.parse(message.body));
+                    });
+                });
     }
+
+   
 
     createUsersView(){
         var usersComponents=this.state.usersComponents

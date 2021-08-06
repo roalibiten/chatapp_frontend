@@ -1,6 +1,11 @@
 import React, { Component } from 'react'
 import { Text, StyleSheet, View,ScrollView,Dimensions ,TextInput,Image, TouchableOpacity} from 'react-native'
 import MessageBubble from './MessageBubble';
+import SockJS from "sockjs-client"
+import { Stomp } from '@stomp/stompjs';
+
+var stompClient=null;
+
 export default class AdminDialogScreen extends Component {
     constructor(props) {
         super(props);
@@ -26,8 +31,46 @@ export default class AdminDialogScreen extends Component {
         };
       }
     
-    componentDidMount(){
+   
+    async componentDidMount(){
         this.createComponents()
+
+        var socket = new SockJS('http://localhost:8080/chat' );
+                stompClient = Stomp.over(socket);
+                stompClient.connect({}, function(frame) {
+                    //setConnected(true);
+                    console.log('Connected: ' + frame);
+                    stompClient.subscribe('/topic', function (message) {
+                        console.log(message);
+                        //handleReceivedMessage(JSON.parse(message.body));
+                    });
+                });
+    }
+
+
+
+    sendMessage(){
+
+        var message={
+            from:this.state.usersName,
+            message:this.state.message
+        }
+
+
+            stompClient.send("/toUser", {},
+                JSON.stringify({'sender':"employee", 'message':this.state.message,"sendTo":"user"})
+            );
+            console.log("sended")
+
+        this.setState({
+            dialogs:this.state.dialogs.push(message),
+            message:""
+        })
+
+        this.createComponents()
+
+        
+        
     }
 
     createComponents(){
@@ -58,22 +101,6 @@ export default class AdminDialogScreen extends Component {
 
     }
 
-    sendMessage(){
-
-        var message={
-            from:this.state.usersName,
-            message:this.state.message
-        }
-
-        this.setState({
-            dialogs:this.state.dialogs.push(message),
-            message:""
-        })
-        this.createComponents()
-
-        
-        
-    }
     render() {
         console.log(this.state.components)
         return (

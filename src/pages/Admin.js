@@ -12,11 +12,13 @@ export default class admin extends Component {
             password:"",
             loged:"false",
 
+
             
 
         };
       }
 
+    
 
     login(username,password){
         console.log(this.state.username+this.state.password)
