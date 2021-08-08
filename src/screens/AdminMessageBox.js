@@ -22,7 +22,6 @@ export default class AdminMessageBox extends Component {
             loged:"false",
             message:"",
 
-            choosenUserName:"James HARDEN",
 
 
            
@@ -34,7 +33,6 @@ export default class AdminMessageBox extends Component {
             dialogId:0,
             
             usersComponents:[],
-            username:"Lutfen konusmak icin birinin yazmasini bekleyiniz ve seciniz.",
 
             users:[] ,            
             components:[],
@@ -65,7 +63,15 @@ export default class AdminMessageBox extends Component {
 
     receivedNewMessage(message){
         console.log("YENI MESAJ"+message)
-        var lastMessage={from:message.sender, message:message.message,IP:message.ip,device:message.device}
+        var today = new Date()
+        var date = today.getDate()+ '.' + (today.getMonth() + 1) + '.' + today.getFullYear()  
+        var time = today.getHours() + '.' + today.getMinutes() 
+
+
+
+        var lastMessage={from:message.sender, message:message.message,IP:message.ip,device:message.device,date: time+" "+date,time:time}
+        console.log("YENI MESAJ"+lastMessage.IP)
+
         var users=this.state.users;
         var newSender=true;
         if(users.length>0){
@@ -85,7 +91,7 @@ export default class AdminMessageBox extends Component {
         }
         }
         if(newSender==true){
-            var user={name:message.sender,messages:[{from:message.sender, message:message.message,IP:message.ip,device:message.device}],lastMessage:message.message}
+             var user={name:message.sender,messages:[lastMessage],lastMessage:message.message}
 
             users.push(user)
             
@@ -96,7 +102,9 @@ export default class AdminMessageBox extends Component {
             users
         })
         this.createUsersView(users)
+        console.log("new message")
         console.log(this.state.users)
+
     }
     createComponent(message){
         var components=this.state.components
@@ -119,24 +127,30 @@ export default class AdminMessageBox extends Component {
 
         })
     }
-    createComponents(){
+    createComponents(users){
+        console.log("createComps")
+        console.log(this.state.users)
         var components=[]
         
         var messageBox;
-        for(var x in this.state.users){
+        for(var x in users){
                 console.log("TAMAM")
-                if(this.state.users[x]==this.state.username){
-            for(var y in this.state.users[x].messages){
+                console.log(users[x].name+this.state.username)
+
+                if(users[x].name==this.state.username){
+                    console.log("name matched")
+
+            for(var y in users[x].messages){
                 messageBox=(
                    
                         <MessageBubble
-                            from={this.state.users[x].messages[y].from}
-                            message={this.state.users[x].messages[y].message}
+                            from={users[x].messages[y].from}
+                            message={users[x].messages[y].message}
                             screen="employeeScreen"
-                            IP={this.state.users[x].messages[this.state.users[x].messages.length-1].IP}
-                            device={this.state.users[x].messages[this.state.users[x].messages.length-1].device}
+                            IP={users[x].messages[users[x].messages.length-1].IP}
+                            device={users[x].messages[users[x].messages.length-1].device}
 
-                            time={this.state.users[x].messages[y].time}
+                            time={users[x].messages[y].time}
 
                         />
                 )
@@ -157,13 +171,17 @@ export default class AdminMessageBox extends Component {
         var userView;
        
         for(var x in users){
-            
+
             userView=(
-                   
                         <AdminUserView
                             name={users[x].name}
                             lastMessage={users[x].lastMessage}
-                            changeDialog={(name,IP,device)=>{this.changeDialog(name,IP,device)}}
+                            IP={users[x].messages[users[x].messages.length-1].IP}
+                            device={users[x].messages[users[x].messages.length-1].device}
+                            date={users[x].messages[users[x].messages.length-1].date}
+
+                            changeDialog={(name,IP,device,date)=>{this.changeDialog(name,IP,device,date).then(()=>{            this.createComponents(this.state.users);
+                            })}}
                             dialogId={users[x].dialogId}
 
                         />
@@ -182,29 +200,69 @@ export default class AdminMessageBox extends Component {
 
     }
 
-    changeDialog(name,IP,device){
+    async changeDialog(name,IP,device,date){
         
-        console.log(name)
         if(name!=this.state.username){
             
-            console.log(device+IP)
+            console.log("lao"+device+IP)
             this.setState({
-                choosenUserName:name,
                 username:name,
                 AdminUserInfoComponent:(
-                    <AdminUserInfo name={name} IP={IP} device={device}/>
+                    <AdminUserInfo name={name} IP={IP} device={device} date={date}/>
     
                 ),
                 components:[]
             })
-            this.createComponents();
+            //this.createComponents(this.state.users);
 
         }
+
        
 
     }
 
+    sendMessage(){
+        var today = new Date()
+        var date = today.getDate()+ '.' + (today.getMonth() + 1) + '.' + today.getFullYear()  
+        var time = today.getHours() + '.' + today.getMinutes() 
 
+
+
+        var lastMessage={from:"employee", message:this.state.message,
+        IP:"",device:"",
+        date: time+" "+date,time:time}
+        
+        var message={
+            sender:"employee",
+            message:this.state.message,
+            sendTo:this.state.username,
+            
+        }
+        
+
+
+            stompClient.send("/chat/"+this.state.username, {},
+                JSON.stringify(message)
+            
+            );
+
+        var users=this.state.users;
+        for(var x in users){
+            if(users[x].name==message.sendTo){
+                users[x].messages.push(lastMessage)
+            }
+        }
+
+        
+        this.setState({
+            users,
+            message:""
+        })
+        this.createComponents(users)
+
+        
+        
+    }
     render() {
 
         return (

@@ -3,10 +3,11 @@ import { Text, StyleSheet, View,Dimensions,TouchableOpacity } from 'react-native
 
 export default class AdminUserView extends Component {
     render() {
+        console.log("userView"+this.props.IP)
         return (
             <TouchableOpacity 
             onPress={()=>{
-                this.props.changeDialog(this.props.name,this.props.IP,this.props.device)
+                this.props.changeDialog(this.props.name,this.props.IP,this.props.device,this.props.date)
                 
             }}
         >

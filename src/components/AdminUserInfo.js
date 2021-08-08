@@ -3,6 +3,8 @@ import { Text, StyleSheet, View,Dimensions } from 'react-native'
 
 export default class AdminUserInfo extends Component {
     render() {
+        console.log("lao"+this.props.device+this.props.date)
+
         return (
             <View style={styles.container}>
                 <View style={styles.row}>
@@ -16,8 +18,8 @@ export default class AdminUserInfo extends Component {
 
                 </View>
                 <View style={styles.row}>
-                    <Text style={styles.titleText}> Ilk Yazisma Tarihi: </Text>
-                    <Text style={styles.descText}> 02.08.2021 </Text>
+                    <Text style={styles.titleText}> Son Yazisma Tarihi: </Text>
+                    <Text style={styles.descText}> {this.props.date} </Text>
 
                 </View>
                 <View style={styles.row}>

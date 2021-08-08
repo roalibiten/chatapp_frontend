@@ -138,11 +138,15 @@ export default class MessageCard extends Component {
               
                 var socket = new SockJS('http://localhost:8080/chat' );
                 stompClient = Stomp.over(socket);
+                var usersName=this.state.usersName
+                console.log("sunu dinliyorum"+usersName)
                 stompClient.connect({}, function(frame) {
+                    const _this=this;
+
                     //setConnected(true);
                     console.log('Connected: ' + frame);
-                    stompClient.subscribe('/topic', function (message) {
-                        console.log(message);
+                    stompClient.subscribe( "/chat/"+usersName, function (message) {
+                        console.log("yENI MESAJ");
                         //handleReceivedMessage(JSON.parse(message.body));
                     });
                 });
