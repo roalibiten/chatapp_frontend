@@ -145,7 +145,9 @@ export default class MessageCard extends Component {
 
                     //setConnected(true);
                     console.log('Connected: ' + frame);
-                    stompClient.subscribe( "/chat/"+usersName, function (message) {
+                    console.log("/user/"+usersName+"/queue");
+
+                    stompClient.subscribe( "/user/"+usersName+"/queue", function (message) {
                         console.log("yENI MESAJ");
                         //handleReceivedMessage(JSON.parse(message.body));
                     });

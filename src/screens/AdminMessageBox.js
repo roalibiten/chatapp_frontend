@@ -241,7 +241,7 @@ export default class AdminMessageBox extends Component {
         
 
 
-            stompClient.send("/chat/"+this.state.username, {},
+            stompClient.send("/chat", {},
                 JSON.stringify(message)
             
             );
