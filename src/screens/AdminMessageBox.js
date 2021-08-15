@@ -8,6 +8,8 @@ import AdminUserView from '../components/AdminUserView';
 import AdminDialogScreen from '../components/AdminDialogScreen';
 import AdminUserInfo from '../components/AdminUserInfo';
 
+import axios from 'axios';
+
 var stompClient=null;
 
 
@@ -50,6 +52,15 @@ export default class AdminMessageBox extends Component {
                 const _this=this;
                 stompClient = Stomp.over(socket);
                 stompClient.connect({}, function(frame) {
+                    axios.get('http://localhost:8080/getMessages')
+                    .then(function (response) {
+                      // handle success
+                      console.log(response);
+                    })
+                    .catch(function (error) {
+                      // handle error
+                      console.log(error);
+                    })
                     //setConnected(true);
                     console.log('Connected: ' + frame);
                     stompClient.subscribe('/topic', function (message) {
@@ -59,6 +70,8 @@ export default class AdminMessageBox extends Component {
                         _this.receivedNewMessage(JSON.parse(message.body));
                     });
                 });
+ 
+
     }
 
     receivedNewMessage(message){
@@ -91,7 +104,7 @@ export default class AdminMessageBox extends Component {
         }
         }
         if(newSender==true){
-             var user={name:message.sender,messages:[lastMessage],lastMessage:message.message}
+             var user={name:message.sender,messages:[lastMessage],lastMessage:message.message,mail:message.mail}
 
             users.push(user)
             
@@ -179,8 +192,8 @@ export default class AdminMessageBox extends Component {
                             IP={users[x].messages[users[x].messages.length-1].IP}
                             device={users[x].messages[users[x].messages.length-1].device}
                             date={users[x].messages[users[x].messages.length-1].date}
-
-                            changeDialog={(name,IP,device,date)=>{this.changeDialog(name,IP,device,date).then(()=>{            this.createComponents(this.state.users);
+                            mail={users[x].mail}
+                            changeDialog={(name,IP,device,date,mail)=>{this.changeDialog(name,IP,device,date,mail).then(()=>{            this.createComponents(this.state.users);
                             })}}
                             dialogId={users[x].dialogId}
 
@@ -200,7 +213,7 @@ export default class AdminMessageBox extends Component {
 
     }
 
-    async changeDialog(name,IP,device,date){
+    async changeDialog(name,IP,device,date,mail){
         
         if(name!=this.state.username){
             
@@ -208,9 +221,10 @@ export default class AdminMessageBox extends Component {
             this.setState({
                 username:name,
                 AdminUserInfoComponent:(
-                    <AdminUserInfo name={name} IP={IP} device={device} date={date}/>
+                    <AdminUserInfo name={name} IP={IP} device={device} date={date} mail={mail}/>
     
                 ),
+                mail:mail,
                 components:[]
             })
             //this.createComponents(this.state.users);
@@ -236,10 +250,10 @@ export default class AdminMessageBox extends Component {
             sender:"employee",
             message:this.state.message,
             sendTo:this.state.username,
+            mail:this.state.mail
             
         }
         
-
 
             stompClient.send("/chat", {},
                 JSON.stringify(message)

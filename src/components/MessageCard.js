@@ -166,7 +166,8 @@ export default class MessageCard extends Component {
             message:this.state.message,
             sendTo:"employee",
             ip:this.state.IP.toString(),
-            device:this.state.device
+            device:this.state.device,
+            mail:this.state.usersMailAddress
         }
 
 
