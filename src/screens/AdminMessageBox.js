@@ -55,7 +55,14 @@ export default class AdminMessageBox extends Component {
                     axios.get('http://localhost:8080/getMessages')
                     .then(function (response) {
                       // handle success
-                      console.log(response);
+                 
+                      console.log(response.data);
+                      
+
+                      for (var x in  response.data){
+                        //console.log(response.data[x]);
+
+                      }
                     })
                     .catch(function (error) {
                       // handle error
@@ -250,7 +257,9 @@ export default class AdminMessageBox extends Component {
             sender:"employee",
             message:this.state.message,
             sendTo:this.state.username,
-            mail:this.state.mail
+            mail:this.state.mail,
+            device:null,
+            ip:null
             
         }
         
