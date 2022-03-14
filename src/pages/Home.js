@@ -9,7 +9,7 @@ export default class Home extends Component {
             <View style={styles.mainContainer} >
                  <Image
                     source={{
-                        uri: 'https://www.cyberpark.com.tr/content/upload/companies/etiya_yeni.png',
+                        uri: 'https://cyberpark.com.tr/content/upload/companies/etiya_yeni.png',
                       }}
                     style={styles.image}
                     resizeMode="center"
